@@ -1,6 +1,22 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
+// ============ SLIDESHOW CONFIGURATION ============
+const SLIDESHOW_CONFIG = {
+  // Auto-play interval in milliseconds (1000 = 1 second)
+  interval: 2000,
+
+  // Start with auto-play enabled
+  autoPlayOnLoad: true,
+
+  // Image file extensions to load
+  imageExtensions: '*.{jpg,jpeg,png,gif,webp}',
+
+  // Sort images alphabetically by caption
+  sortAlphabetically: true
+}
+// =================================================
+
 // Dynamically import all images from public/images folder
 // Vite will discover these at build time
 const imageModules = import.meta.glob('/public/images/*.{jpg,jpeg,png,gif,webp}', {
@@ -10,7 +26,7 @@ const imageModules = import.meta.glob('/public/images/*.{jpg,jpeg,png,gif,webp}'
 })
 
 // Transform the imported modules into our image structure
-const images = Object.entries(imageModules).map(([path, url]) => {
+const unsortedImages = Object.entries(imageModules).map(([path, url]) => {
   // Extract filename without extension
   const filename = path.split('/').pop()?.replace(/\.(jpg|jpeg|png|gif|webp)$/, '') || ''
 
@@ -25,11 +41,16 @@ const images = Object.entries(imageModules).map(([path, url]) => {
     alt: caption,
     caption: caption
   }
-}).sort((a, b) => a.caption.localeCompare(b.caption))
+})
+
+// Sort images if configured
+const images = SLIDESHOW_CONFIG.sortAlphabetically
+  ? unsortedImages.sort((a, b) => a.caption.localeCompare(b.caption))
+  : unsortedImages
 
 function App() {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [isAutoPlaying, setIsAutoPlaying] = useState(SLIDESHOW_CONFIG.autoPlayOnLoad)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
 
   useEffect(() => {
@@ -37,7 +58,7 @@ function App() {
 
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
-    }, 5000)
+    }, SLIDESHOW_CONFIG.interval)
 
     return () => clearInterval(interval)
   }, [isAutoPlaying])
