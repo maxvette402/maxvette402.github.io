@@ -30,6 +30,7 @@ const images = Object.entries(imageModules).map(([path, url]) => {
 function App() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false)
 
   useEffect(() => {
     if (!isAutoPlaying || images.length === 0) return
@@ -40,6 +41,30 @@ function App() {
 
     return () => clearInterval(interval)
   }, [isAutoPlaying])
+
+  // Handle ESC key to close lightbox
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isLightboxOpen) {
+        setIsLightboxOpen(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [isLightboxOpen])
+
+  // Prevent body scroll when lightbox is open
+  useEffect(() => {
+    if (isLightboxOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isLightboxOpen])
 
   const goToSlide = (index: number) => {
     setCurrentIndex(index)
@@ -56,6 +81,15 @@ function App() {
   const goToNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
     setIsAutoPlaying(false)
+  }
+
+  const openLightbox = () => {
+    setIsLightboxOpen(true)
+    setIsAutoPlaying(false)
+  }
+
+  const closeLightbox = () => {
+    setIsLightboxOpen(false)
   }
 
   // Show message if no images found
@@ -96,7 +130,7 @@ function App() {
             ‹
           </button>
 
-          <div className="carousel-content">
+          <div className="carousel-content" onClick={openLightbox} style={{ cursor: 'pointer' }}>
             <img
               src={images[currentIndex].src}
               alt={images[currentIndex].alt}
@@ -157,6 +191,49 @@ function App() {
           </p>
         </section>
       </div>
+
+      {/* Lightbox Modal */}
+      {isLightboxOpen && (
+        <div className="lightbox-overlay" onClick={closeLightbox}>
+          <button
+            className="lightbox-close"
+            onClick={closeLightbox}
+            aria-label="Close lightbox"
+          >
+            ×
+          </button>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={images[currentIndex].src}
+              alt={images[currentIndex].alt}
+              className="lightbox-image"
+            />
+            <div className="lightbox-caption">
+              {images[currentIndex].caption}
+            </div>
+          </div>
+          <button
+            className="lightbox-nav lightbox-prev"
+            onClick={(e) => {
+              e.stopPropagation()
+              goToPrevious()
+            }}
+            aria-label="Previous image"
+          >
+            ‹
+          </button>
+          <button
+            className="lightbox-nav lightbox-next"
+            onClick={(e) => {
+              e.stopPropagation()
+              goToNext()
+            }}
+            aria-label="Next image"
+          >
+            ›
+          </button>
+        </div>
+      )}
     </div>
   )
 }
