@@ -7,7 +7,7 @@ const SLIDESHOW_CONFIG = {
   interval: 2000,
 
   // Start with auto-play enabled
-  autoPlayOnLoad: true,
+  autoPlayOnLoad: false,
 
   // Image file extensions to load
   imageExtensions: '*.{jpg,jpeg,png,gif,webp}',
