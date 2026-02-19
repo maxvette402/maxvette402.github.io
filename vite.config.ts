@@ -1,6 +1,6 @@
 import { readdirSync, writeFileSync } from 'fs'
 import { resolve } from 'path'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import type { Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -68,5 +68,10 @@ export default defineConfig({
     rollupOptions: {
       input: htmlEntries,
     },
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/test-setup.ts'],
   },
 })
