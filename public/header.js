@@ -3,11 +3,6 @@ export function createHeader() {
   const header = document.createElement('header');
   header.className = 'site-header';
   header.innerHTML = `
-    <meta charset="UTF-8" />
-    <meta name="robots" content="noindex">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/styles.css">
     <nav class="nav-container">
       <div class="nav-brand">
         <a href="/">maxvette.com</a>

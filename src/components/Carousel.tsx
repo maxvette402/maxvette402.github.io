@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import './Carousel.css'
 
 export interface CarouselImage {
   src: string

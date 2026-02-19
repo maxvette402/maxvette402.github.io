@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Link } from './components/Link'
+import './styles.css'
 
 function Home() {
   return (
