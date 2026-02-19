@@ -106,6 +106,47 @@ h1 {
   color: #555;
 }
 
+.content h2 {
+  font-size: 1.4rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.content ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.content ul a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border: 2px solid #ff8c00;
+  border-radius: 10px;
+  color: #ff6b00;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.content ul a::after {
+  content: '→';
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.content ul a:hover {
+  background: linear-gradient(135deg, #ff6b00 0%, #f4a300 100%);
+  border-color: transparent;
+  color: white;
+  transform: translateX(4px);
+  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.3);
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
   .nav-container {
