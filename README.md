@@ -22,6 +22,26 @@ The `/dist` folder is never committed — it's built and served entirely on GitH
 To enable this, GitHub Pages must be set to **Source: GitHub Actions** in the repo settings:
 `Settings → Pages → Source → GitHub Actions`
 
+## GitHub Actions
+
+Monitor runs and logs: **https://github.com/maxvette402/maxvette402.github.io/actions**
+
+### Workflows
+
+#### `Build and Deploy` — [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)
+
+Triggered on every push to `main`. Runs two sequential jobs:
+
+| Job | Runner | What it does |
+|---|---|---|
+| `build` | `ubuntu-latest` | Checkout → `npm ci` → `npm run build` → upload `/dist` as Pages artifact |
+| `deploy` | `ubuntu-latest` | Receives the artifact from `build` and publishes it to GitHub Pages |
+
+Permissions required:
+- `pages: write` — to publish to GitHub Pages
+- `id-token: write` — for OIDC authentication with the Pages deployment API
+- `contents: read` — to checkout the repository
+
 ## HTTP Headers
 
 Cache-Control is set to `public, max-age=60` in the Vite dev server ([`vite.config.ts`](vite.config.ts)):
