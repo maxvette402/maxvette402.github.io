@@ -1,0 +1,5 @@
+/*.html
+  Cache-Control: public, max-age=60
+
+/
+  Cache-Control: public, max-age=60

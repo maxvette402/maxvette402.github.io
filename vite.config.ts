@@ -51,6 +51,11 @@ function imageManifestPlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    headers: {
+      'Cache-Control': 'public, max-age=60',
+    },
+  },
   plugins: [
     react({
       babel: {
