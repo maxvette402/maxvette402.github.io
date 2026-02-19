@@ -1,80 +1,62 @@
 # maxvette402.github.io
-maxvette402 github.io
 
----
+Personal site hosted on GitHub Pages, built with React + TypeScript + Vite.
 
-## React + TypeScript + Vite
+## Publishing
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Push to `main` to deploy:
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git push origin main
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+This triggers the GitHub Actions workflow in [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), which:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Installs dependencies with `npm ci`
+2. Runs `npm run build` → TypeScript type-check + Vite build → outputs `/dist`
+3. Uploads `/dist` as a GitHub Pages artifact
+4. Deploys it to **https://maxvette402.github.io**
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
+The `/dist` folder is never committed — it's built and served entirely on GitHub's infrastructure.
+
+To enable this, GitHub Pages must be set to **Source: GitHub Actions** in the repo settings:
+`Settings → Pages → Source → GitHub Actions`
+
+## HTTP Headers
+
+Cache-Control is set to `public, max-age=60` in the Vite dev server ([`vite.config.ts`](vite.config.ts)):
+
+```ts
+server: {
+  headers: {
+    'Cache-Control': 'public, max-age=60',
   },
-])
+}
 ```
+
+This keeps assets fresh during development (60 second cache) while still allowing caching. In production, GitHub Pages controls caching — assets hashed by Vite (e.g. `main-abc123.js`) are cached long-term by the browser since their URLs change on every build.
+
+## Development
+
+```bash
+npm run dev       # Start dev server with HMR at localhost:5173
+npm run build     # Type-check + production build
+npm run preview   # Preview the production build locally
+npm run lint      # Run ESLint
+npm test          # Run tests with Vitest (watch mode)
+npm run test:run  # Run tests once
+```
+
+## Tech Stack
+
+| Tool | Version | Notes |
+|---|---|---|
+| React | 19.2 | With React Compiler for automatic memoization |
+| TypeScript | 5.9 | Strict mode, `erasableSyntaxOnly` for compiler compat |
+| Vite | 8.0 beta | Build tool and dev server with HMR |
+| Vitest | 4.0 | Unit testing with jsdom environment |
+| ESLint | 9 | Flat config format with TypeScript + React Hooks plugins |
+
+## Multi-page Setup
+
+Vite is configured to automatically discover all `.html` files in the project root as entry points (see [`vite.config.ts`](vite.config.ts)). Adding a new page is as simple as creating a new `.html` file — it gets built and deployed automatically.
